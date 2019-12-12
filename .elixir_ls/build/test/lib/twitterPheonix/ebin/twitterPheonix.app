@@ -7,6 +7,8 @@
                         'Elixir.TwitterPheonix.Application',
                         'Elixir.TwitterPheonix.DataCase',
                         'Elixir.TwitterPheonix.Repo',
+                        'Elixir.TwitterPheonix.TweetUser',
+                        'Elixir.TwitterPheonix.Tweets',
                         'Elixir.TwitterPheonixWeb',
                         'Elixir.TwitterPheonixWeb.ChannelCase',
                         'Elixir.TwitterPheonixWeb.ConnCase',

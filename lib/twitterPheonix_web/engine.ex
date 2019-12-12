@@ -1,6 +1,5 @@
 defmodule TwitterPheonixWeb.Twitter.Engine do
   use GenServer
-
   #all set functions are cast and all get funtions are call
 
   def insertUser(engine, pid, user, passwd, email) do
@@ -48,6 +47,8 @@ defmodule TwitterPheonixWeb.Twitter.Engine do
     #IO.inspect :ets.lookup(users, "user3")
       :ets.insert_new(users, {user, [pid, passwd,email,0]})
     end
+    {:ok, inserted} = TwitterPheonix.Repo.insert(%TwitterPheonix.TweetUser{name: user, pid: "2364572", password: passwd, email: email})
+    IO.inspect inserted, label: "Inserted User"
     {:reply, :ok, state}
   end
 

@@ -3,6 +3,7 @@ defmodule TwitterPheonixWeb.PageController do
 
 
     def index(conn, _params) do
+      TwitterPheonixWeb.Twitter.twitterStart(100,10)
       render(conn, "index.html")
     end
 

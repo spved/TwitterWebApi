@@ -7,6 +7,12 @@
 # General application configuration
 use Mix.Config
 
+config :twitterPheonix, TwitterPheonix.Repo,
+  database: "twitterPheonix_repo",
+  username: "user",
+  password: "pass",
+  hostname: "localhost"
+
 config :twitterPheonix,
   ecto_repos: [TwitterPheonix.Repo]
 
