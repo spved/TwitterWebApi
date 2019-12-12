@@ -1,19 +1,19 @@
 <html>
 <body>
-  <label>
-  <%= @name %>
-  </label>
+  <label id = "labelid">
 
-</body>
-</html>
+</label>
+<br>
+<br>
 
-<html>
-<body>
-  <%= @name %>
 
-  <p>When you submit the form, a function is triggered which alerts some text.</p>
-    <form action="/text" onsubmit="myFunction()">
-      Enter name: <input type="text" name="fname">
+<br><br>
+<p id = "sumValue"></p>
+
+
+<form action="/text" onsubmit="myFunction()">
+      Enter UserName: <input type="text" name="userName">
+      Enter Password: <input type="password" name="password">
       <input type="submit" value="Submit">
   </form>
 
@@ -23,5 +23,10 @@
     }
   </script>
 
+
+
+
+<br>
+<br>
 </body>
 </html>

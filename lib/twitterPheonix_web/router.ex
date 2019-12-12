@@ -16,9 +16,13 @@ defmodule TwitterPheonixWeb.Router do
   scope "/", TwitterPheonixWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
+    #get "/", PageController, :index
+    get "/", PageController, :simulate
     get "/text", PageController, :displayText
-    get "/users/:id", PageController, :show  end
+    get "/simulate", PageController, :simulation
+    get "/users/:id", PageController, :show
+    get "/tweet/", PageController, :showTweet
+  end
 
   # Other scopes may use custom stacks.
   # scope "/api", TwitterPheonixWeb do

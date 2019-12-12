@@ -1,0 +1,24 @@
+<html>
+<body>
+  <label>
+    <h2> Welcome To your Twitter DashBoard <br>
+ <b><%= @userName %>
+</h2>
+<br>
+<br>
+<form action="/tweet" onsubmit="myFunction()">
+      Tweet Something: <input type="text" name="tweetData">
+      <input type="submit" value="Tweet">
+  </form>
+<br>
+<h3> YOUR TWEETS </h3>
+<b><%= @table %>
+<br>
+<br>
+<h3> TIMELINE </h3>
+<br>
+</label>
+<br>
+<br>
+</body>
+</html>

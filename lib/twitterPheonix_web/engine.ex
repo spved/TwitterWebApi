@@ -15,6 +15,10 @@ defmodule TwitterPheonixWeb.Twitter.Engine do
    GenServer.cast(engine, {:deleteTweet, pid})
   end
 
+  def handle_call({:usersTable}, _from, state) do
+    {users,_,_,_,_,_,_,_} = state
+    IO.inspect :ets.whereis(:users), label: "usersgotInEngine"
+  end
   #login/logout
 
   def handle_call({:login,userName, password}, _from, state) do

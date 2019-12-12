@@ -2,12 +2,12 @@ use Mix.Config
 
 # Configure your database
 config :twitterPheonix, TwitterPheonix.Repo,
-  username: "varsharanka",
-  password: "",
-  database: "postgis_test",
-  hostname: "localhost",
-  show_sensitive_data_on_connection_error: true,
-  pool_size: 10
+ username: "harikamulumudi",
+ password: "",
+ database: "postgis_test",
+ hostname: "localhost",
+ show_sensitive_data_on_connection_error: true,
+ pool_size: 10
 
 # For development, we disable any cache and enable
 # debugging and code reloading.

@@ -9,6 +9,13 @@ defmodule TwitterPheonixWeb.Twitter.Simulator do
   :ets.insert_new(simulation, {"tweetCount", 0})
 
 
+#  def getEngine() do
+      
+
+       #IO.inspect engine, label: "engine"
+#       engine
+#  end
+
 
   #Register all the users
   #IO.inspect "Registering users"

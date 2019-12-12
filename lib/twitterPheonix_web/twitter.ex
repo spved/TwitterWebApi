@@ -3,9 +3,14 @@ defmodule TwitterPheonixWeb.Twitter do
   def twitterStart(numUsers, numTweets) do
 
       engine = TwitterPheonixWeb.Twitter.Engine.start_node()
-      #GenServer.call(engine, {:initDB})
-     #IO.inspect engine
 
+
+      :ets.new(:engineTable, [:named_table,:public])
+      :ets.insert_new(:engineTable, {"engineId", engine})
+      IO.inspect :engineTable, label: "created"
+
+      #GenServer.call(engine, {:initDB})
+      #IO.inspect engine
       clients =  Enum.map(1..numUsers, fn _ ->
             pid = TwitterPheonixWeb.Twitter.Client.start_node()
             GenServer.cast(pid, {:setEngine, engine})
@@ -14,8 +19,12 @@ defmodule TwitterPheonixWeb.Twitter do
          #IO.inspect clients
 
       TwitterPheonixWeb.Twitter.Simulator.simulate(numUsers, numTweets, clients, engine)
+
+      IO.inspect :ets.whereis(:users), label: "using"
+
     end
 
+  
 
   def init(init_arg) do
     {:ok, init_arg}
