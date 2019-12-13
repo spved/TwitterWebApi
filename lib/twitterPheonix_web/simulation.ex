@@ -9,6 +9,13 @@ defmodule TwitterPheonixWeb.Twitter.Simulator do
   :ets.insert_new(simulation, {"tweetCount", 0})
 
 
+#  def getEngine() do
+
+
+       #IO.inspect engine, label: "engine"
+#       engine
+#  end
+
 
   #Register all the users
   #IO.inspect "Registering users"
@@ -16,8 +23,9 @@ defmodule TwitterPheonixWeb.Twitter.Simulator do
             user = TwitterPheonixWeb.Twitter.Simulator.Helper.generateUserId(i)
             pwd = TwitterPheonixWeb.Twitter.Simulator.Helper.generatePassword(i)
             mail = TwitterPheonixWeb.Twitter.Simulator.Helper.generateMail(i)
+            IO.inspect user, label: "userName"
             GenServer.call(x, {:register, user, pwd, mail})
-            GenServer.call(engine, {:login, user, pwd})
+            GenServer.call(TwitterPheonixWeb.Twitter.Engine, {:login, user, pwd})
           end)
 
 # {_,_,users} =
@@ -27,22 +35,24 @@ defmodule TwitterPheonixWeb.Twitter.Simulator do
   #IO.inspect "Deletion"
   #IO.inspect length(clients)
 
-deletedUsers = Enum.map((1..round(length(clients)*0.1)), fn(x) ->
-          deleteUser = Enum.random(clients)
+#deletedUsers = Enum.map((1..round(length(clients)*0.1)), fn(x) ->
+#          deleteUser = Enum.random(clients)
    #       IO.inspect deleteUser, label: "deleteUser"
           #IO.inspect "Before deletion"
           #deleteUser(engine, pid)
-          GenServer.cast(deleteUser, {:getUserTable, deleteUser})
-          GenServer.cast(deleteUser, {:delete, deleteUser})
+#          GenServer.cast(deleteUser, {:getUserTable, deleteUser})
+#          GenServer.cast(deleteUser, {:delete, deleteUser})
            #IO.inspect "After deletion"
-          GenServer.cast(deleteUser, {:getUserTable, deleteUser})
-          deleteUser
-     end)
+
+#          GenServer.cast(deleteUser, {:getUserTable, deleteUser})
+
+#          deleteUser
+#     end)
 
 #IO.inspect deletedUsers, label: "deletedUsers"
 
 #IO.inspect clients, label: "clientsBefore"
- clients = clients -- deletedUsers
+ #clients = clients -- deletedUsers
 #IO.inspect clients, label: "clientsAfter"
 
 
@@ -100,15 +110,15 @@ end)
   #IO.inspect userToRetweet, label: "userToRetweet"
   userName = GenServer.call(userToRetweet,{:getUserName})
   #IO.inspect userName, label: "userName"
-  list = GenServer.call(engine,{:getSubscribersOf, userName})
+  list = GenServer.call(TwitterPheonixWeb.Twitter.Engine,{:getSubscribersOf, userName})
   #IO.inspect list, label: "list"
   choosenUser = Enum.at(list, 0)
   #IO.inspect choosenUser, label: "choosenUser"
-  tweetsOfUser = GenServer.call(engine,{:getTweetsOfUser, choosenUser})
+  tweetsOfUser = GenServer.call(TwitterPheonixWeb.Twitter.Engine,{:getTweetsOfUser, choosenUser})
   #IO.inspect tweetsOfUser, label: "tweetsOfUser"
   tweetId = Enum.at(tweetsOfUser, 0)
   #IO.inspect tweetId, label: "tweetId"
-  tweet = GenServer.call(engine,{:getTweet, tweetId})
+  tweet = GenServer.call(TwitterPheonixWeb.Twitter.Engine,{:getTweet, tweetId})
   #IO.inspect tweet, label: "tweet"
   GenServer.cast(userToRetweet,{:reTweet, tweetId, tweet})
   #GenServer.cast({:reTweet,userName, tweetData, subscribers, users}, state) do
@@ -124,13 +134,17 @@ end)
 
 
 
- deleteUser = Enum.random(clients)
+ #deleteUser = Enum.random(clients)
 #IO.inspect deleteUser, label: "deleteUser to delete tweets"
- userName = GenServer.call(deleteUser,{:getUserName})
- GenServer.cast(deleteUser, {:delete, deleteUser})
+ #userName = GenServer.call(deleteUser,{:getUserName})
+# GenServer.cast(deleteUser, {:delete, deleteUser})
     infinite(numUsers*numTweets*0.8, startTime)
+    #inf()
    end
 
+   def inf() do
+     inf()
+   end
    def infinite(total_tweets, startTime) do
    [{_, num_tweets}] = :ets.lookup(:simulation, "tweetCount")
    #[{_, tr}] = :ets.lookup(:table, "tr")

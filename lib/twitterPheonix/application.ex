@@ -20,6 +20,8 @@ defmodule TwitterPheonix.Application do
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: TwitterPheonix.Supervisor]
     Supervisor.start_link(children, opts)
+    TwitterPheonixWeb.Twitter.Supervisor.start_link([])
+
   end
 
   # Tell Phoenix to update the endpoint configuration

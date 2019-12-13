@@ -4,16 +4,16 @@ defmodule TwitterPheonixWeb.Twitter.Engine do
   alias TwitterPheonix.Repo
   #all set functions are cast and all get funtions are call
 
-  def insertUser(engine, pid, user, passwd, email) do
-   GenServer.call(engine, {:insertUser, pid, user, passwd, email})
+  def insertUser(pid, user, passwd, email) do
+   GenServer.call(TwitterPheonixWeb.Twitter.Engine, {:insertUser, pid, user, passwd, email})
   end
 
   def deleteUser(engine, pid) do
-   GenServer.cast(engine, {:deleteUser, pid})
+   GenServer.cast(TwitterPheonixWeb.Twitter.Engine, {:deleteUser, pid})
   end
 
   def deleteTweet(engine, tweetId) do
-   GenServer.cast(engine, {:deleteTweet, tweetId})
+   GenServer.cast(TwitterPheonixWeb.Twitter.Engine, {:deleteTweet, tweetId})
   end
 
   #login/logout
@@ -272,13 +272,11 @@ defmodule TwitterPheonixWeb.Twitter.Engine do
     {:noreply, state}
   end
 
-  def start_node() do
-    {:ok, pid} = GenServer.start_link(__MODULE__, :ok, [])
-    GenServer.call(pid, {:initDB})
-    pid
+  def start_link(args) do
+    GenServer.start_link(__MODULE__, args, name: __MODULE__)
   end
 
-  def init(:ok) do
+  def init(args) do
   # {hashId, neighborMap} , {hashId, neighborMap}
   {:ok, 0}
   end
