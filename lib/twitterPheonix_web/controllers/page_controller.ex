@@ -151,13 +151,13 @@ defmodule TwitterPheonixWeb.PageController do
        IO.inspect GenServer.call(userPid,{:getState})
 
 
-       GenServer.cast(userPid,{:tweet, tweetData})
+       GenServer.call(userPid,{:tweet, tweetData})
 
 
-       tweetList = GenServer.call(userPid,{:returnStateTweets})
-
+       #tweetList = GenServer.call(userPid,{:returnStateTweets})
+       tweetList = GenServer.call(userPid, {:getMyTweets})
        IO.inspect tweetList, label: "tweetList"
-
+       tweetList = Enum.join(tweetList, "\"\n\"")
        #tweetList = List.to_string(tweetList)
 
        #tweetedList = GenServer.call(TwitterPheonixWeb.Twitter.Engine,{:getTweetsOfUser, userName})
@@ -188,20 +188,28 @@ defmodule TwitterPheonixWeb.PageController do
       #IO.inspect TwitterPheonixWeb.Twitter.Engine
 
       #TwitterPheonixWeb.Twitter.Engine.insertUser(pid, "user", "passwd", "email")
+      GenServer.call(TwitterPheonixWeb.Twitter.Engine,{:addSubscriberOf, userName, followerData})
+      followingList1 = GenServer.call(TwitterPheonixWeb.Twitter.Engine,{:getSubscribersOf, userName})
+      IO.inspect followingList1, label: "followingList1"
 
 
 
-      followingList = [followingList] ++ [followerData]
+      #tweetList = GenServer.call(userPid, {:getMyTweets})
+      #IO.inspect tweetList, label: "tweetList"
+      followingList1 = Enum.join(followingList1, "\"\n\"")
+
+
+      #followingList = [followingList] ++ [followerData]
 
       #followingList = [followingList] ++ [" "]
       #followingList = [followingList] ++ [followerData]
 
-      followingListString = to_string(followingList)
+      #followingListString = to_string(followingList)
       #Regex.replace(~r/[A-Z]/, followingListString, " \\0")
 
       tweetedList = []
 
-      render(conn, "testTweet.html", [userName: userName , table: tweetList, yourTweets: tweetedList, following: followingListString])
+      render(conn, "testTweet.html", [userName: userName , table: tweetList, yourTweets: tweetedList, following: followingList1])
 
   end
 end

@@ -26,14 +26,33 @@ defmodule TwitterPheonixWeb.Twitter.Client do
      {:noreply, state}
     end
 
+  def handle_call({:getMyTweets}, _from, state) do
+    {userName,engine, _} = state
+
+      tweetList = GenServer.call(TwitterPheonixWeb.Twitter.Engine,{:getTweetsOfUser, userName})
+      IO.inspect tweetList, label: "tweets of user"
+      sdtweets = Enum.map(tweetList, fn n ->
+        stweet = GenServer.call(TwitterPheonixWeb.Twitter.Engine, {:getTweet, n})
+        IO.inspect stweet
+        stweet
+      end)
+      {:reply, sdtweets, state}
+   end
   def handle_call({:querySubscribedTo}, _from, state) do
   {userName,engine, _} = state
    currentList = GenServer.call(TwitterPheonixWeb.Twitter.Engine,{:getSubscribers, userName})
    #IO.inspect currentList, label: "querySubscribedTo, currentList"
     #for each subscriber get tweets
+    tweetList = GenServer.call(TwitterPheonixWeb.Twitter.Engine,{:getTweetsOfUser, userName})
+    IO.inspect tweetList, label: "tweets of user"
+    sdtweets = Enum.map(tweetList, fn n ->
+      stweet = GenServer.call(TwitterPheonixWeb.Twitter.Engine, {:getTweet, n})
+      IO.inspect stweet
+      stweet
+    end)
     subscribedTweets = List.flatten(Enum.map(currentList, fn ni ->
           tweetList = GenServer.call(TwitterPheonixWeb.Twitter.Engine,{:getTweetsOfUser, ni})
-          #IO.inspect tweetList, label: "tweets of user"
+          IO.inspect tweetList, label: "tweets of user"
            #get tweets for each tweet id
            stweets = Enum.map(tweetList, fn n ->
            stweet = GenServer.call(TwitterPheonixWeb.Twitter.Engine, {:getTweet, n})
@@ -42,17 +61,17 @@ defmodule TwitterPheonixWeb.Twitter.Client do
        end))
       #IO.inspect subscribedTweets, label: "subscribedTweets"
        subscribedTweets
-       {:reply, subscribedTweets, state}
+       {:reply, sdtweets, state}
     end
 
-    def handle_cast({:tweet, tweetData}, state) do
+    def handle_call({:tweet, tweetData}, _from, state) do
         {userName,engine, _} = state
         GenServer.cast(TwitterPheonixWeb.Twitter.Engine, {:send, userName, tweetData})
         tweetId = GenServer.call(TwitterPheonixWeb.Twitter.Engine,{:addTweet,tweetData})
-        GenServer.cast(TwitterPheonixWeb.Twitter.Engine, {:addTweetsToUser, userName, tweetId})
+        GenServer.call(TwitterPheonixWeb.Twitter.Engine, {:addTweetsToUser, userName, tweetId})
         #tweetId = TwitterPheonixWeb.Twitter.Helper.addTweet(tweetData,tweets,tableSize)
         TwitterPheonixWeb.Twitter.Helper.readTweet(tweetData,tweetId, engine)
-        {:noreply, state}
+        {:reply, :ok, state}
     end
 
     def handle_cast({:reTweet, tweetId, tweetData}, state) do
@@ -116,7 +135,7 @@ defmodule TwitterPheonixWeb.Twitter.Client do
     #userId1 is subscribing to userId2
     #IO.inspect :ets.lookup(subscribers, userId2)
     GenServer.cast(TwitterPheonixWeb.Twitter.Engine,{:addSubscriber, userId1, userId2})
-    GenServer.cast(TwitterPheonixWeb.Twitter.Engine,{:addSubscriberOf, userId2, userId1})
+    GenServer.call(TwitterPheonixWeb.Twitter.Engine,{:addSubscriberOf, userId2, userId1})
     #GenServer.cast({:addSubscriberOf, user, suser}, state) do
    #:ets.update_counter(subscribedTo, userId1, user2Subscribers )
    {:noreply, state}
@@ -144,7 +163,7 @@ defmodule TwitterPheonixWeb.Twitter.Client do
    def handle_call({:returnStateTweets}, _from, state) do
       {_,_,tweetList} = state
       IO.inspect tweetList, label: "returnStateTweets"
-      
+
       {:reply, tweetList, state}
    end
 

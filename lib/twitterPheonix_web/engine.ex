@@ -23,10 +23,7 @@ defmodule TwitterPheonixWeb.Twitter.Engine do
     loggedIn = if TwitterPheonixWeb.Twitter.Helper.validateUser(userName) do
       list = TwitterPheonixWeb.Twitter.Helper.readValue(:ets.lookup(users, userName))
       userPassword = Enum.at(list, 1)
-      #query = from(p in TwitterPheonix.TweetUser,
-      #        select: p.name, p.password, p.email
-      #        where: p.name = userName)
-      user = Repo.get_by(TwitterPheonix.TweetUser, name: userName)
+      #user = Repo.get_by(TwitterPheonix.TweetUser, name: userName)
       #IO.inpspect user, label: "UserData"
       loggedIn = if userPassword == password do
         :ets.insert(users, {userName, List.replace_at(list, 3, 1)})
@@ -165,7 +162,7 @@ defmodule TwitterPheonixWeb.Twitter.Engine do
     {:reply, :ok, state}
   end
 
-  def handle_cast({:addTweetsToUser, user, tweetId}, state) do
+  def handle_call({:addTweetsToUser, user, tweetId}, _from, state) do
     {_,_,_,_,tweetUserMap,_,_,_} = state
     list = TwitterPheonixWeb.Twitter.Helper.readValue(:ets.lookup(tweetUserMap, user))
     if list == [] do
@@ -175,7 +172,9 @@ defmodule TwitterPheonixWeb.Twitter.Engine do
     else
       :ets.insert(tweetUserMap, {user, list++[tweetId]})
     end
-    {:noreply, state}
+
+    IO.inspect list++[tweetId], label: "tweet added"
+    {:reply, :ok, state}
   end
 
   def handle_cast({:deleteUser, user}, state) do
@@ -209,17 +208,19 @@ defmodule TwitterPheonixWeb.Twitter.Engine do
     {:noreply, state}
   end
 
-  def handle_cast({:addSubscriberOf, user, suser}, state) do
+  def handle_call({:addSubscriberOf, user, suser}, _from, state) do
     {_,_,_,subscribedTo,_,_,_,_} = state
     list = TwitterPheonixWeb.Twitter.Helper.readValue(:ets.lookup(subscribedTo, user))
     if list == [] do
       :ets.insert_new(subscribedTo, {user, [suser]})
     else
-    list = list ++ [suser]
-    list = Enum.uniq(list)
+      list = list ++ [suser]
+      list = Enum.uniq(list)
       :ets.insert(subscribedTo, {user, list})
     end
-    {:noreply, state}
+    IO.inspect "subscribers added"
+    IO.inspect list ++ [suser], label: user
+    {:reply, :ok, state}
   end
 
   def handle_cast({:retweet, tweetId}, state) do
