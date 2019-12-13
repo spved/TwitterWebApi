@@ -23,7 +23,7 @@ defmodule TwitterPheonixWeb.PageController do
       #TwitterPheonixWeb.Twitter.twitterStart(100,10)
 
       TwitterPheonixWeb.Twitter.twitterStart(String.to_integer(nUsers),String.to_integer(nTweets))
-
+      
       render(conn, "loginRegister.html")
 #      render(conn, "simulate.html", numUsers: nUsers)
     end
