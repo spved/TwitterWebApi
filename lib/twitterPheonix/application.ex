@@ -9,7 +9,7 @@ defmodule TwitterPheonix.Application do
     # List all child processes to be supervised
     children = [
       # Start the Ecto repository
-      Engine.Repo,
+      #Engine.Repo,
       # Start the endpoint when the application starts
       TwitterPheonixWeb.Endpoint
       # Starts a worker by calling: TwitterPheonix.Worker.start_link(arg)
@@ -20,6 +20,9 @@ defmodule TwitterPheonix.Application do
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: TwitterPheonix.Supervisor]
     Supervisor.start_link(children, opts)
+    TwitterPheonixWeb.Twitter.Supervisor.start_link([])
+
+
   end
 
   # Tell Phoenix to update the endpoint configuration
@@ -28,4 +31,5 @@ defmodule TwitterPheonix.Application do
     TwitterPheonixWeb.Endpoint.config_change(changed, removed)
     :ok
   end
+
 end

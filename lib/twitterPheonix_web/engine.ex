@@ -264,13 +264,13 @@ defmodule TwitterPheonixWeb.Twitter.Engine do
   def start_link(args) do
     #IO.puts "engine start link"
     #{:ok, pid} =
-      GenServer.start_link(__MODULE__, args, name: __MODULE__)
-    #GenServer.call(pid, {:initDB})
+        GenServer.start_link(__MODULE__, args, name: __MODULE__)
+    #  GenServer.call(pid, {:initDB})
     #pid
   end
 
   def init(queue) do
-    IO.puts "engine init"
+   IO.puts "engine init"
   # {hashId, neighborMap} , {hashId, neighborMap}
   {:ok, queue}
   end

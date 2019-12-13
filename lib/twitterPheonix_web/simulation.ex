@@ -138,7 +138,7 @@ end)
 #IO.inspect deleteUser, label: "deleteUser to delete tweets"
  #userName = GenServer.call(deleteUser,{:getUserName})
 # GenServer.cast(deleteUser, {:delete, deleteUser})
-    #infinite(numUsers*numTweets*0.8, startTime)
+    infinite(numUsers*numTweets*0.8, startTime)
     #inf()
    end
 

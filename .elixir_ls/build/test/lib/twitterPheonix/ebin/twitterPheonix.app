@@ -3,7 +3,7 @@
                              gettext,jason,phoenix_pubsub,postgrex,ecto_sql,
                              phoenix_html,plug_cowboy,phoenix,phoenix_ecto]},
               {description,"twitterPheonix"},
-              {modules,['Elixir.Engine.Engine','Elixir.Engine.Repo',
+              {modules,['Elixir.Engine.Engine','Elixir.Engine.repo',
                         'Elixir.Trial','Elixir.TwitterPheonix',
                         'Elixir.TwitterPheonix 2',
                         'Elixir.TwitterPheonix.Application',

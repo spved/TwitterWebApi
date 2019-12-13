@@ -89,6 +89,10 @@ defmodule TwitterPheonixWeb.Twitter.Client do
     {:reply, mtweets, state}
   end
 
+  def handle_call({:getState}, _from, state) do
+    {:reply, state, state}
+  end
+  
   def handle_cast({:receive, userName, tweetUser, tweet}, state) do
     {user, engine, tweets} = state
     tweets = if TwitterPheonixWeb.Twitter.Helper.isLogin(userName, TwitterPheonixWeb.Twitter.Engine) == 1 do

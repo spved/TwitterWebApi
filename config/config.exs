@@ -7,11 +7,6 @@
 # General application configuration
 use Mix.Config
 
-
-config :twitterPheonix, Engine.Repo,
-  database: "twitterPheonix_repo",
-  hostname: "localhost"
-
 config :twitterPheonix,
   ecto_repos: [TwitterPheonix.Repo]
 

@@ -133,12 +133,23 @@ defmodule TwitterPheonixWeb.PageController do
       #  eng = TwitterPheonixWeb.Twitter.Engine.start_node()
 
 
-      # userPid = GenServer.call(TwitterPheonixWeb.Twitter.Engine,{:getUser, userName})
+       [userPid,_,_,_] = GenServer.call(TwitterPheonixWeb.Twitter.Engine,{:getUser, userName})
 
-      # GenServer.cast(userPid,{:tweet, tweetData})
+       IO.inspect userPid, label: "userPid"
+
+       IO.inspect userName, label: "userName"
+
+       IO.inspect "it's state"
+
+       IO.inspect GenServer.call(userPid,{:getState})
 
 
-       #tweetList = GenServer.call(userPid,{:returnStateTweets})
+       GenServer.cast(userPid,{:tweet, tweetData})
+
+
+       tweetList = GenServer.call(userPid,{:returnStateTweets})
+
+       IO.inspect tweetList, label: "tweetList"
 
        #tweetList = List.to_string(tweetList)
 
@@ -160,6 +171,14 @@ defmodule TwitterPheonixWeb.PageController do
       #IO.inspect TwitterPheonixWeb.Twitter.Engine, label: "thought this fails"
 
       #pid = TwitterPheonixWeb.Twitter.Client.start_node()
+
+      #IO.inspect "checking if pid is alive"
+      #IO.inspect Process.alive?(pid)
+      #IO.inspect pid
+
+      #IO.inspect "checking if engine is alive"
+      #IO.inspect Process.alive?(TwitterPheonixWeb.Twitter.Engine)
+      #IO.inspect TwitterPheonixWeb.Twitter.Engine
 
       #TwitterPheonixWeb.Twitter.Engine.insertUser(pid, "user", "passwd", "email")
 
