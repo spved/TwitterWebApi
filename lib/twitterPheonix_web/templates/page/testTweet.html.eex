@@ -9,16 +9,31 @@
 <form action="/tweet" onsubmit="myFunction()">
       <input type="hidden" id="userName" name="userName" value= <%= @userName %>>
       <input type="hidden" id="tweetList" name="tweetList" value= <%= @table %>>
-      Tweet Something: <input type="text" name="tweetData">
+      <input type="hidden" id="followingList" name="followingList" value= <%= @following %>>
+      Tweet Something: <input type="text" name="tweetData"> <br>
       <input type="submit" value="Tweet">
   </form>
+
+  <form action="/follow" onsubmit="myFunction()">
+        <input type="hidden" id="userName" name="userName" value= <%= @userName %>>
+        <input type="hidden" id="tweetList" name="tweetList" value= <%= @table %>>
+        <input type="hidden" id="followingList" name="followingList" value= <%= @following %>>
+        Follow: <input type="text" name="followerData"> <br>
+        <input type="submit" value="follow">
+    </form>
+
+
 <br>
 <h3> YOUR TWEETS </h3>
-<b><%= @yourTweets %>
+<b><%= @table %>
 <br>
 <br>
 <h3> TIMELINE </h3>
-<b><%= @table %>
+<b><%= @yourTweets %>
+<br>
+<br>
+<h3> Following </h3>
+<b><%= @following %>
 <br>
 </label>
 <br>

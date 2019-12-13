@@ -48,6 +48,7 @@
                         'Elixir.TwitterPheonixWeb.Twitter.Simulator 2',
                         'Elixir.TwitterPheonixWeb.Twitter.Simulator.Helper',
                         'Elixir.TwitterPheonixWeb.Twitter.Simulator.Helper 2',
+                        'Elixir.TwitterPheonixWeb.Twitter.Supervisor',
                         'Elixir.TwitterPheonixWeb.UserSocket',
                         'Elixir.TwitterPheonixWeb.UserSocket 2']},
               {registered,[]},

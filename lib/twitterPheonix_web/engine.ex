@@ -2,17 +2,22 @@ defmodule TwitterPheonixWeb.Twitter.Engine do
   use GenServer
 
   #all set functions are cast and all get funtions are call
-
-  def insertUser(engine, pid, user, passwd, email) do
-   GenServer.call(engine, {:insertUser, pid, user, passwd, email})
+  def testingFunction() do
+    IO.inspect "test passed"
+    pid = TwitterPheonixWeb.Twitter.Client.start_node()
+    insertUser(pid, "user", "password", "mail")
+  end
+  def insertUser(pid, user, passwd, email) do
+   IO.inspect "now insertUser function modified and came yay"
+   GenServer.call(TwitterPheonixWeb.Twitter.Engine, {:insertUser, pid, user, passwd, email})
   end
 
   def deleteUser(engine, pid) do
-   GenServer.cast(engine, {:deleteUser, pid})
+   GenServer.cast(TwitterPheonixWeb.Twitter.Engine, {:deleteUser, pid})
   end
 
   def deleteTweet(engine, pid) do
-   GenServer.cast(engine, {:deleteTweet, pid})
+   GenServer.cast(TwitterPheonixWeb.Twitter.Engine, {:deleteTweet, pid})
   end
 
   def handle_call({:usersTable}, _from, state) do
@@ -47,6 +52,7 @@ defmodule TwitterPheonixWeb.Twitter.Engine do
   end
 
   def handle_call({:insertUser, pid, user, passwd, email}, _from, state) do
+    IO.inspect "insert user came"
     {users,_,_,_,_,_,_,_} = state
     if !TwitterPheonixWeb.Twitter.Helper.validateUser(user) do
     #IO.inspect :ets.lookup(users, "user3")
@@ -255,14 +261,17 @@ defmodule TwitterPheonixWeb.Twitter.Engine do
     {:noreply, state}
   end
 
-  def start_node() do
-    {:ok, pid} = GenServer.start_link(__MODULE__, :ok, [])
-    GenServer.call(pid, {:initDB})
-    pid
+  def start_link(args) do
+    #IO.puts "engine start link"
+    #{:ok, pid} =
+      GenServer.start_link(__MODULE__, args, name: __MODULE__)
+    #GenServer.call(pid, {:initDB})
+    #pid
   end
 
-  def init(:ok) do
+  def init(queue) do
+    IO.puts "engine init"
   # {hashId, neighborMap} , {hashId, neighborMap}
-  {:ok, 0}
+  {:ok, queue}
   end
 end

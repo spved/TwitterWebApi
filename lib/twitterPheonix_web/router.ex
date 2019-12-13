@@ -22,6 +22,7 @@ defmodule TwitterPheonixWeb.Router do
     get "/simulate", PageController, :simulation
     get "/users/:id", PageController, :show
     get "/tweet/", PageController, :showTweet
+    get "/follow/", PageController, :showFollowers
     get "/redirectLogin", PageController, :redirectLogin
     get "/redirectRegister", PageController, :redirectRegister
     get "/registerUser", PageController, :registerUser
