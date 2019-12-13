@@ -8,25 +8,27 @@ defmodule TwitterPheonix do
   """
   #TwitterPheonixWeb.Twitter.twitterStart(100,10)
   IO.inspect "starting here right"
-  engine = TwitterPheonixWeb.Twitter.Engine.start_node()
+  #engine = TwitterPheonixWeb.Twitter.Engine.start_node()
 
-  
+  #engineId = %Engine.Engine{engineId: engine}
+  #Engine.Repo.insert(engineId)
 
-  :ets.new(:engineTable, [:named_table,:public])
-  :ets.insert_new(:engineTable, {"engineId", engine})
+  IO.inspect "inserted into repository"
+
+  #:ets.new(:engineTable, [:named_table,:public])
+  #:ets.insert_new(:engineTable, {"engineId", engine})
   IO.inspect :engineTable, label: "created_newly"
 
   IO.inspect "Testing Engine"
-  Trial.testingEngine()
+  #Trial.testingEngine()
 
   def getEngineId() do
-    IO.inspect "goooo"
-    IO.inspect "got engines"
+      IO.inspect "goooo"
+      IO.inspect "got engines"
+      #IO.inspect :ets.whereis(:engineTable), label: "engineTable"
+      #IO.inspect :ets.whereis(:users), label: "usersgot"
 
-      IO.inspect :ets.whereis(:engineTable), label: "engineTable"
-      IO.inspect :ets.whereis(:users), label: "usersgot"
-
-    [{ _ , engine}] = :ets.lookup(:engineTable, "engineId")
+    #[{ _ , engine}] = :ets.lookup(:engineTable, "engineId")
   end
 
 end

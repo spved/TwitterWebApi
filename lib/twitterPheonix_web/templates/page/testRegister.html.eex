@@ -11,10 +11,11 @@
 <p id = "sumValue"></p>
 
 
-<form action="/text" onsubmit="myFunction()">
+<form action="/registerUser" onsubmit="myFunction()">
       Enter UserName: <input type="text" name="userName">
       Enter Password: <input type="password" name="password">
-      <input type="submit" value="Login">
+      Enter Email: <input type="text" name="mail">
+      <input type="submit" value="Register">
   </form>
 
   <script>

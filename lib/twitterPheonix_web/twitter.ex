@@ -4,6 +4,11 @@ defmodule TwitterPheonixWeb.Twitter do
 
       engine = TwitterPheonixWeb.Twitter.Engine.start_node()
 
+      #engine = TwitterPheonixWeb.Twitter.Engine.start_node()
+      #engineString = IO.inspect(engine)
+      #engineId = %Engine.Engine{engineId: engineString}
+      #engineIdString = IO.inspect engineId
+      #Engine.Repo.insert(engineIdString)
 
       :ets.new(:engineTable, [:named_table,:public])
       :ets.insert_new(:engineTable, {"engineId", engine})
@@ -24,7 +29,7 @@ defmodule TwitterPheonixWeb.Twitter do
 
     end
 
-  
+
 
   def init(init_arg) do
     {:ok, init_arg}

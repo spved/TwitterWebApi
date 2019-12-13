@@ -22,6 +22,9 @@ defmodule TwitterPheonixWeb.Router do
     get "/simulate", PageController, :simulation
     get "/users/:id", PageController, :show
     get "/tweet/", PageController, :showTweet
+    get "/redirectLogin", PageController, :redirectLogin
+    get "/redirectRegister", PageController, :redirectRegister
+    get "/registerUser", PageController, :registerUser
   end
 
   # Other scopes may use custom stacks.

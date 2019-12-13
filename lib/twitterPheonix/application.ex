@@ -9,7 +9,7 @@ defmodule TwitterPheonix.Application do
     # List all child processes to be supervised
     children = [
       # Start the Ecto repository
-      TwitterPheonix.Repo,
+      Engine.Repo,
       # Start the endpoint when the application starts
       TwitterPheonixWeb.Endpoint
       # Starts a worker by calling: TwitterPheonix.Worker.start_link(arg)
