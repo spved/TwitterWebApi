@@ -172,9 +172,9 @@ defmodule TwitterPheonixWeb.Twitter.Client do
     {:noreply, state}
   end
 
-  def start_node() do
-    {:ok, pid} = GenServer.start_link(__MODULE__, :ok, [])
-    pid
+  def start_node(args) do
+    {:ok, _} = GenServer.start_link(__MODULE__, :ok, name: String.to_atom(args))
+    #String.to_atom(args)
   end
 
   def init(:ok) do

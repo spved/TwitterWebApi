@@ -1,9 +1,17 @@
 defmodule TwitterPheonixWeb.PageController do
   use TwitterPheonixWeb, :controller
-
+  import Ecto.Query, only: [from: 2]
+  alias TwitterPheonix.Repo
 
     def index(conn, _params) do
-      TwitterPheonixWeb.Twitter.twitterStart(100,10)
+      Repo.delete_all(TwitterPheonix.TweetUser)
+      Repo.delete_all(TwitterPheonix.Tweets)
+      Repo.delete_all(TwitterPheonix.SubscribedTo)
+      Repo.delete_all(TwitterPheonix.Subscribers)
+      Repo.delete_all(TwitterPheonix.HashTagTweetMap)
+      Repo.delete_all(TwitterPheonix.MentionedUserMap)
+
+      TwitterPheonixWeb.Twitter.twitterStart(10,10)
       render(conn, "index.html")
     end
 

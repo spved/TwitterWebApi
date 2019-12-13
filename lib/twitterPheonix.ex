@@ -13,7 +13,6 @@ defmodule TwitterPheonix do
       TwitterPheonix.Repo,
     ]
     Supervisor.start_link(children)
-
   end
   #TwitterPheonix.start()
 

@@ -1,5 +1,7 @@
 defmodule TwitterPheonixWeb.Twitter.Engine do
   use GenServer
+  import Ecto.Query, only: [from: 2]
+  alias TwitterPheonix.Repo
   #all set functions are cast and all get funtions are call
 
   def insertUser(engine, pid, user, passwd, email) do
@@ -10,8 +12,8 @@ defmodule TwitterPheonixWeb.Twitter.Engine do
    GenServer.cast(engine, {:deleteUser, pid})
   end
 
-  def deleteTweet(engine, pid) do
-   GenServer.cast(engine, {:deleteTweet, pid})
+  def deleteTweet(engine, tweetId) do
+   GenServer.cast(engine, {:deleteTweet, tweetId})
   end
 
   #login/logout
@@ -21,6 +23,11 @@ defmodule TwitterPheonixWeb.Twitter.Engine do
     loggedIn = if TwitterPheonixWeb.Twitter.Helper.validateUser(userName) do
       list = TwitterPheonixWeb.Twitter.Helper.readValue(:ets.lookup(users, userName))
       userPassword = Enum.at(list, 1)
+      #query = from(p in TwitterPheonix.TweetUser,
+      #        select: p.name, p.password, p.email
+      #        where: p.name = userName)
+      user = Repo.get_by(TwitterPheonix.TweetUser, name: userName)
+      #IO.inpspect user, label: "UserData"
       loggedIn = if userPassword == password do
         :ets.insert(users, {userName, List.replace_at(list, 3, 1)})
         true
@@ -47,29 +54,42 @@ defmodule TwitterPheonixWeb.Twitter.Engine do
     #IO.inspect :ets.lookup(users, "user3")
       :ets.insert_new(users, {user, [pid, passwd,email,0]})
     end
-    {:ok, inserted} = TwitterPheonix.Repo.insert(%TwitterPheonix.TweetUser{name: user, pid: "2364572", password: passwd, email: email})
-    IO.inspect inserted, label: "Inserted User"
+    {:ok, inserted} = Repo.insert(%TwitterPheonix.TweetUser{name: user, pid: "1234", password: passwd, email: email})
+    #IO.inspect inserted, label: "Inserted User"
     {:reply, :ok, state}
   end
 
   def handle_call({:getUser, userName}, _from, state) do
     {users,_,_,_,_,_,_,_} = state
       list = TwitterPheonixWeb.Twitter.Helper.readValue(:ets.lookup(users, userName))
+      #query = from p in TwitterPheonix.TweetUser,
+      #        select: p.name, p.password, p.email
+      #        where: p.name = userName
+      #Repo.all(query)
     {:reply,list, state}
   end
 
   #insert and get tweet
   def handle_call({:getTweet, tweetId}, _from, state) do
-    {_,tweets,_,_,_,_,_,_} = state
-    tweet = List.first(TwitterPheonixWeb.Twitter.Helper.readValue(:ets.lookup(tweets, tweetId)))
-    #IO.inspect tweet, label: "tweet added"
+    #tweet = List.first(TwitterPheonixWeb.Twitter.Helper.readValue(:ets.lookup(tweets, tweetId)))
+    data = Repo.get_by(TwitterPheonix.Tweets, id: tweetId)
+    tweet = if is_nil(data) do
+      nil
+    else
+      data.tweet
+    end
+    IO.inspect tweet, label: "tweet found"
     {:reply, tweet, state}
   end
 
   def handle_call({:addTweet, tweet}, _from, state) do
-    {_,tweets,_,_,_,_,_,tableSize} = state
-    id = :ets.update_counter(tableSize, "tweets", {2,1})
-    :ets.insert_new(tweets, {id, [tweet, 0]})
+    #{_,tweets,_,_,_,_,_,tableSize} = state
+    #id = :ets.update_counter(tableSize, "tweets", {2,1})
+    #:ets.insert_new(tweets, {id, [tweet, 0]})
+    {:ok, inserted} = Repo.insert(%TwitterPheonix.Tweets{tweetId: 1, tweet: tweet})
+    id = inserted.id
+    IO.inspect id, label: "------id inserted------>"
+    #IO.inspect inserted, label: "Inserted Tweet"
     {:reply, id, state}
   end
 
@@ -114,10 +134,9 @@ defmodule TwitterPheonixWeb.Twitter.Engine do
   end
 
   def handle_call({:print}, _from, state) do
-    {users, tweets, subscribers, subscribedTo, tweetUserMap, mentionUserMap, hashTagTweetMap, _} = state
+    {users, _, subscribers, subscribedTo, tweetUserMap, mentionUserMap, hashTagTweetMap, _} = state
 
     IO.inspect users, label: "users"
-    IO.inspect tweets, label: "tweets"
     IO.inspect subscribers, label: "subscribers"
     IO.inspect subscribedTo, label: "subscribedTo"
     IO.inspect tweetUserMap, label: "tweetUserMap"
@@ -132,7 +151,7 @@ defmodule TwitterPheonixWeb.Twitter.Engine do
     else
       :ets.whereis :user
     end
-    tweets = :ets.new(:tweets, [:named_table,:public])
+    #tweets = :ets.new(:tweets, [:named_table,:public])
     subscribers = :ets.new(:subscribers, [:named_table,:public])
     subscribedTo = :ets.new(:subscribedTo, [:named_table,:public])
     tweetUserMap = :ets.new(:tweetUserMap, [:named_table,:public])
@@ -142,7 +161,7 @@ defmodule TwitterPheonixWeb.Twitter.Engine do
 
     :ets.insert_new(tableSize, {"tweets", 0})
 
-    state = {users, tweets, subscribers, subscribedTo, tweetUserMap, mentionUserMap, hashTagTweetMap, tableSize}
+    state = {users, users, subscribers, subscribedTo, tweetUserMap, mentionUserMap, hashTagTweetMap, tableSize}
     {:reply, :ok, state}
   end
 
@@ -150,6 +169,8 @@ defmodule TwitterPheonixWeb.Twitter.Engine do
     {_,_,_,_,tweetUserMap,_,_,_} = state
     list = TwitterPheonixWeb.Twitter.Helper.readValue(:ets.lookup(tweetUserMap, user))
     if list == [] do
+      {:ok, inserted} = Repo.insert(%TwitterPheonix.TweetUserMap{userId: user, tweetIds: [tweetId]})
+      #IO.inspect inserted, label: "Inserted User"
       :ets.insert_new(tweetUserMap, {user, [tweetId]})
     else
       :ets.insert(tweetUserMap, {user, list++[tweetId]})
@@ -162,8 +183,8 @@ defmodule TwitterPheonixWeb.Twitter.Engine do
     {:noreply, state}
   end
 
-  def handle_cast({:deleteTweet, tweet}, state) do
-    :ets.delete(:tweets, tweet)
+  def handle_cast({:deleteTweet, tweetId}, state) do
+    Repo.delete_all(TwitterPheonix.Tweets, id: tweetId)
     {:noreply, state}
   end
 
@@ -172,6 +193,8 @@ defmodule TwitterPheonixWeb.Twitter.Engine do
     list = TwitterPheonixWeb.Twitter.Helper.readValue(:ets.lookup(:hashTagTweetMap, hashTag))
     if list == [] do
       :ets.insert_new(:hashTagTweetMap, {hashTag, [tweetId]})
+      {:ok, inserted} = Repo.insert(%TwitterPheonix.HashTagTweetMap{hashtag: hashTag, tweetIds: [tweetId]})
+      #IO.inspect inserted, label: "Inserted Tweet"
     else
       :ets.insert(:hashTagTweetMap, {hashTag, list++[tweetId]})
     end
@@ -200,14 +223,11 @@ defmodule TwitterPheonixWeb.Twitter.Engine do
   end
 
   def handle_cast({:retweet, tweetId}, state) do
-    tweet = TwitterPheonixWeb.Twitter.Helper.readValue(:ets.lookup(:tweets, tweetId))
-    if tweet == [] do
-    else
-      tweetData = List.first(tweet)
-      count = List.last(tweet)
-      tweet = [tweetData, count+1]
-      :ets.insert(:tweets, {tweetId, tweet})
-    end
+    #tweet = TwitterPheonixWeb.Twitter.Helper.readValue(:ets.lookup(:tweets, tweetId))
+    #if tweet == [] do
+    #else
+      #tweetData = List.first(tweet)
+    #end
     {:noreply, state}
   end
 
