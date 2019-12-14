@@ -17,7 +17,7 @@ defmodule TwitterPheonixWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :simulate
-    get "/text", PageController, :displayText
+    get "/text", PageController, :loginUser
     get "/simulate", PageController, :simulation
     get "/users/:id", PageController, :show
     get "/tweet/", PageController, :showTweet

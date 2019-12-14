@@ -35,83 +35,37 @@ defmodule TwitterPheonixWeb.PageController do
 #      render(conn, "simulate.html", numUsers: nUsers)
     end
 
-    def displayText(conn, %{"userName" => tdata}) do
-      #checking = IO.inspect tdata
-
-      #engine = TwitterPheonixWeb.Twitter.Engine.start_node()
-      #:ets.insert_new(engineTable, {"engineId", engine})
-
-      #TwitterPheonixWeb.Twitter.Simulator.getEngine()
-
-      IO.inspect "testing the Engine in pageController"
-      #Trial.testingEngine()
-      IO.inspect "Done testing the Engine in pageController"
-
-      #TwitterPheonix.getEngineId()
-
-      #IO.inspect :ets.whereis(:users), label: "usingTry"
-
-      #IO.inspect :ets.whereis(:engineTable), label: "usingTry"
-
-      #[{ _ , engine}] = :ets.lookup(:engineTable, "engineId")
-
-      allTweets = :ets.new(:allTweets, [:named_table,:public])
-      :ets.insert_new(allTweets, {"harika", ["tweeting"]})
-      :ets.insert_new(allTweets, {"varsha", ["tweetingAgain"]})
-
-
-       #[{ _ , list}] = :ets.lookup(allTweets, tdata)
-       #stringList = Enum.join(list, ", ")
-
-
-
-       #user = TwitterPheonixWeb.Twitter.Simulator.Helper.generateUserId(i)
-
-       #pid = TwitterPheonixWeb.Twitter.Client.start_node()
-       #pwd = TwitterPheonixWeb.Twitter.Simulator.Helper.generatePassword(1)
-       #mail = TwitterPheonixWeb.Twitter.Simulator.Helper.generateMail(1)
-       #GenServer.call(pid, {:register, tdata, pwd, mail})
-       #GenServer.call(engine, {:login, tdata, pwd})
-
-
-       #TwitterPheonixWeb.Twitter.Engine.insertUser(engine, pid, tdata, pwd, mail)
-       #userPid = GenServer.call(engine,{:getUser, tdata})
-
-      stringList = []
-      tweetedList = []
-      render(conn, "testTweet.html", [userName: tdata , table: stringList, yourTweets: tweetedList, following: ""])
-    end
 
     def show(conn, %{"id" => id}) do
 
-      render(conn, "test.html", name: id)
+      render(conn, "test.html", name: id, message: "")
 
     end
 
 
     def redirectLogin(conn, _params) do
       #IO.inspect _params, label: "_params"
-      render(conn, "test.html", name: "")
+      render(conn, "test.html", name: "", message: "")
     end
 
     def loginUser(conn,  %{"userName" => userName, "password" => password}) do
-      #engine
+      login = GenServer.call(TwitterPheonixWeb.Twitter.Engine,{:login, userName, password})
+      IO.inspect login, label: "Can I log in? "
+      if login do
+        [userPid,_,_,_] = GenServer.call(TwitterPheonixWeb.Twitter.Engine,{:getUser, userName})
+        tweetList = GenServer.call(userPid, {:getMyTweets})
+        tweetList = Enum.join(tweetList, "\"\n\"")
+        followingList1 = GenServer.call(TwitterPheonixWeb.Twitter.Engine,{:getSubscribersOf, userName})
+        followingList1 = Enum.join(followingList1, "\"\n\"")
+        tweetedList = []
 
-      #GenServer.call(engine, {:login, userName, password})
-
-      # userPid = GenServer.call(eng,{:getUser, userName})
-
-      # tweetList = GenServer.call(userPid,{:returnStateTweets})
-
-      # tweetList = List.to_string(tweetList)
-
-      #tweetedList = GenServer.call(engine,{:getTweetsOfUser, userName})
-
-      # tweetedList = List.to_string(tweetedList)
-
-      tweetList = []
-      tweetedList = []
-      render(conn, "testTweet.html", [userName: userName , table: tweetList, yourTweets: tweetedList, following: ""])
+         render(conn, "testTweet.html", [userName: userName , table: tweetList, yourTweets: tweetedList, following: followingList1])
+        #tweetList = []
+        #tweetedList = []
+        #render(conn, "testTweet.html", [userName: userName , table: tweetList, yourTweets: tweetedList, following: ""])
+      else
+        render(conn, "test.html", name: "", message: "Invalid User Name or Password")
+      end
     end
 
     def redirectRegister(conn,  _params) do
@@ -136,80 +90,30 @@ defmodule TwitterPheonixWeb.PageController do
 
       def showTweet(conn, %{"userName" => userName, "tweetList" => tweetList, "followingList" => followingList, "tweetData" => tweetData}) do
 
-        tweetList = [tweetList] ++ [tweetData]
-      #  eng = TwitterPheonixWeb.Twitter.Engine.start_node()
-
-
        [userPid,_,_,_] = GenServer.call(TwitterPheonixWeb.Twitter.Engine,{:getUser, userName})
-
-       IO.inspect userPid, label: "userPid"
-
-       IO.inspect userName, label: "userName"
-
-       IO.inspect "it's state"
-
-       IO.inspect GenServer.call(userPid,{:getState})
-
-
        GenServer.call(userPid,{:tweet, tweetData})
-
-
-       #tweetList = GenServer.call(userPid,{:returnStateTweets})
        tweetList = GenServer.call(userPid, {:getMyTweets})
        IO.inspect tweetList, label: "tweetList"
        tweetList = Enum.join(tweetList, "\"\n\"")
-       #tweetList = List.to_string(tweetList)
+       followingList1 = GenServer.call(TwitterPheonixWeb.Twitter.Engine,{:getSubscribersOf, userName})
+       IO.inspect followingList1, label: "followingList1"
+       followingList1 = Enum.join(followingList1, "\"\n\"")
+       tweetedList = []
 
-       #tweetedList = GenServer.call(TwitterPheonixWeb.Twitter.Engine,{:getTweetsOfUser, userName})
-
-      # tweetedList = List.to_string(tweetedList)
-
-       #IO.inspect tweetedList , label: "showTweet"
-
-      tweetedList = []
-
-        render(conn, "testTweet.html", [userName: userName , table: tweetList, yourTweets: tweetedList, following: followingList])
+        render(conn, "testTweet.html", [userName: userName , table: tweetList, yourTweets: tweetedList, following: followingList1])
 
     end
 
     def showFollowers(conn, %{"userName" => userName, "tweetList" => tweetList, "followingList" => followingList, "followerData" => followerData}) do
-
-      #TwitterPheonixWeb.Twitter.Engine.testingFunction()
-      #IO.inspect TwitterPheonixWeb.Twitter.Engine, label: "thought this fails"
-
-      #pid = TwitterPheonixWeb.Twitter.Client.start_node()
-
-      #IO.inspect "checking if pid is alive"
-      #IO.inspect Process.alive?(pid)
-      #IO.inspect pid
-
-      #IO.inspect "checking if engine is alive"
-      #IO.inspect Process.alive?(TwitterPheonixWeb.Twitter.Engine)
-      #IO.inspect TwitterPheonixWeb.Twitter.Engine
-
-      #TwitterPheonixWeb.Twitter.Engine.insertUser(pid, "user", "passwd", "email")
       GenServer.call(TwitterPheonixWeb.Twitter.Engine,{:addSubscriberOf, userName, followerData})
       followingList1 = GenServer.call(TwitterPheonixWeb.Twitter.Engine,{:getSubscribersOf, userName})
       IO.inspect followingList1, label: "followingList1"
-
-
-
-      #tweetList = GenServer.call(userPid, {:getMyTweets})
-      #IO.inspect tweetList, label: "tweetList"
       followingList1 = Enum.join(followingList1, "\"\n\"")
-
-
-      #followingList = [followingList] ++ [followerData]
-
-      #followingList = [followingList] ++ [" "]
-      #followingList = [followingList] ++ [followerData]
-
-      #followingListString = to_string(followingList)
-      #Regex.replace(~r/[A-Z]/, followingListString, " \\0")
-
+      [userPid,_,_,_] = GenServer.call(TwitterPheonixWeb.Twitter.Engine,{:getUser, userName})
+      tweetList = GenServer.call(userPid, {:getMyTweets})
+      IO.inspect tweetList, label: "tweetList"
+      tweetList = Enum.join(tweetList, "\"\n\"")
       tweetedList = []
-
       render(conn, "testTweet.html", [userName: userName , table: tweetList, yourTweets: tweetedList, following: followingList1])
-
   end
 end

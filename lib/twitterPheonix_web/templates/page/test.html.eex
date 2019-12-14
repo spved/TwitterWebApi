@@ -15,6 +15,9 @@
       Enter UserName: <input type="text" name="userName">
       Enter Password: <input type="password" name="password">
       <input type="submit" value="Login">
+      <br>
+      <font color = red><%= @message %></font>
+
   </form>
 
   <script>
